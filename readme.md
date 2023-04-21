@@ -2,4 +2,4 @@
 - pwm demo upload
 - WIFI demo upload
 - OLED demo upload
-- Onenet demo upload
+- stm32 demo based Clion upload
