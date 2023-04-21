@@ -1,0 +1,3 @@
+C:/Users/Mr.zhou/Desktop/clion_stm32_demo/cmake-build-debug/CMakeFiles/clion_stm32_demo.elf.dir
+C:/Users/Mr.zhou/Desktop/clion_stm32_demo/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Mr.zhou/Desktop/clion_stm32_demo/cmake-build-debug/CMakeFiles/rebuild_cache.dir
