@@ -22,7 +22,7 @@ struct rt_device_pwm *pwm_dev1;      /* PWM设备句柄 */
 extern void MX_TIM3_Init(void);
 int main(void)
 {
-    MX_TIM3_Init();
+
     rt_uint32_t period, pulse, dir;
     period = 1000000;    /* 1KHz周期为1ms,这里单位是纳秒ns，1ms等于10的6次方纳秒ns*/
     pulse = 500000;          /* PWM脉冲宽度值，单位为纳秒ns */
