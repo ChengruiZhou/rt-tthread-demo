@@ -4,8 +4,7 @@
 - OLED demo upload
 - stm32 demo based Clion upload
 - Encoder model
-    PA6     ------> TIM3_CH1
-    PA7     ------> TIM3_CH2
+
     通过stm32cubemx进行配置，引脚为encoder model T1 and T2 模式
   加入“pulse_encoder_config.h”和“pulse_encoder_config.c”文件
   
