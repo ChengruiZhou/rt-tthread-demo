@@ -15,58 +15,36 @@
 #include "ov5640_scch.h"
 #include "ov5640_dcmi.h"
 
-/* 定义 PWM3 设备对象 */
-struct rt_device_pwm *pwm3_device;
 
-#define PWM_DEV_NAME        "pwm3"  /* PWM设备名称 */
-#define PWM_DEV_CHANNEL1     3       /* PWM通道 */
-struct rt_device_pwm *pwm_dev1;      /* PWM设备句柄 */
-
-extern void MX_TIM3_Init(void);
 int main(void)
 {
-
-    rt_uint32_t period, pulse, dir;
-    period = 1000000;    /* 1KHz周期为1ms,这里单位是纳秒ns，1ms等于10的6次方纳秒ns*/
-    pulse = 500000;          /* PWM脉冲宽度值，单位为纳秒ns */
-    dir = 0;
-           /* 查找设备 */
-    pwm_dev1 = (struct rt_device_pwm *)rt_device_find(PWM_DEV_NAME);
-    if (pwm_dev1 == RT_NULL)
-    {
-        rt_kprintf("pwm sample run failed! can't find %s device!\n", PWM_DEV_NAME);
-    }
-    rt_kprintf("pwm sample run ! find %s device!\n", PWM_DEV_NAME);
-   /* 设置PWM周期和脉冲宽度 */
-    rt_pwm_set(pwm_dev1, PWM_DEV_CHANNEL1, period, pulse);
-   /* 使能设备 */
-    rt_pwm_enable(pwm_dev1, PWM_DEV_CHANNEL1);
-
-    MX_DCMI_Init();
+    OV5640_IDTypeDef OV5640_Camera_ID;
+//    uint32_t index = 1;
+    SCB_EnableICache();//使能I-Cache
+    SCB_EnableDCache();//使能D-Cache
+    SCB->CACR|=1<<2;   //强制D-Cache透写,如不开启,实际使用中可能遇到各种问题
     MX_I2C1_Init();
+    OV5640_init();
+
+    /* 读取摄像头芯片ID，确定摄像头正常连接 */
+    OV5640_ReadID(&OV5640_Camera_ID);
+    if(OV5640_Camera_ID.PIDH  == 0x56){
+        rt_kprintf("检测到OV5640摄像头。");
+    }else {
+        rt_kprintf("没有检测到OV5640摄像头，请重新检查连接。");
+    }
+//    OV2640_JPEG_Mode(); //切换为JPEG模式
+//    rt_kprintf("切换为JPEG模式 !\r\n");
+//    OV2640_OutSize_Set(OV5640_JPEG_WIDTH,OV5640_JPEG_HEIGHT);
+//    rt_kprintf("设置图像大小 !\r\n");
+//    SCCB_WR_Reg(0XFF,0X00);
+//    SCCB_WR_Reg(0XD3,0X10);
+//    SCCB_WR_Reg(0XFF,0X01);
+//    SCCB_WR_Reg(0X11,0X8);
+//    OV5640_WriteReg
+//    StartOV5640();
     while (1)
     {
-        rt_thread_mdelay(50);
-        if (dir)
-        {
-            pulse += 5000;      /* 从0值开始每次增加5000ns */
-        }
-        else
-        {
-            pulse -= 5000;      /* 从最大值开始每次减少5000ns */
-        }
-        if (pulse >= period)
-        {
-            dir = 0;
-        }
-        if (0 == pulse)
-        {
-            dir = 1;
-        }
-
-        /* 设置PWM周期和脉冲宽度 */
-        rt_pwm_set(pwm_dev1, PWM_DEV_CHANNEL1, period, pulse);
-
 
     }
 
