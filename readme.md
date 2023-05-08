@@ -10,11 +10,11 @@
   
 board中并无此句，需添加
  <p align="center">
-<img src="figure/encoder_config1.png" width="80%" >
+<img src="figure/encoder_config1.png" width="100%" >
 </p>
 添加pulse_encoder_config.h文件到索引列表
 <p align="center">
-<img src="figure/encoder_config2.png" width="80%" >
+<img src="figure/encoder_config2.png" width="100%" >
 </p>
 可以获取所定义的编码器信息
 <p align="center">
@@ -24,3 +24,6 @@ board中并无此句，需添加
 <p align="center">
 <img src="figure/encoder_config3.png" width="100%" >
 </p>
+
+- OV5640
+stm32h7xx_hal_conf.h打开#define HAL_DCMI_MODULE_ENABLED，不然无法识别dcmi hal文件
