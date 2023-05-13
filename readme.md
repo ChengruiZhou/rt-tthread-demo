@@ -27,3 +27,5 @@ board中并无此句，需添加
 
 - OV5640
 stm32h7xx_hal_conf.h打开#define HAL_DCMI_MODULE_ENABLED，不然无法识别dcmi hal文件
+- demo_drv_ov5640_V1
+实现SCCH检测到模块的功能
