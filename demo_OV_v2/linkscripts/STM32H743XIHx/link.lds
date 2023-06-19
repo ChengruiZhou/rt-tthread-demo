@@ -104,14 +104,14 @@ SECTIONS
         /* This is used by the startup in order to initialize the .data secion */
         _edata = . ;
     } >RAM
-	.SDRAM :
-	{
+	.SDRAM (NOLOAD) : ALIGN(4)
+	    {
 	    . = ALIGN(4);
-	    *(.SDRAM)    /* SDRAM相关的代码和数据 */
-	    *(.SDRAM.*)  /* 其他SDRAM相关的段 */
+	    *(.SDRAM)
+	    *(.SDRAM.*)
 	    . = ALIGN(4);
-	} > SDRAM
-
+	    __SDRAM_free__ = .;
+	    } > SDRAM
     .stack : 
     {
         . = ALIGN(4);
