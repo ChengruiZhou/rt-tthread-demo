@@ -29,6 +29,17 @@ board中并无此句，需添加
 stm32h7xx_hal_conf.h打开#define HAL_DCMI_MODULE_ENABLED，不然无法识别dcmi hal文件
 - demo_drv_ov5640_V1
 实现SCCH检测到模块的功能
-- ddemo_OV_v2
+- demo_OV_v2
 实现加入外部SDRAM
-教程链接：https://mp.weixin.qq.com/s/iC36R6myj3drSEsJWIOc6Q
+教程链接：https://mp.weixin.qq.com/s/iC36R6myj3drSEsJWIOc6Qs
+- demo_OV_v3
+实现DCMI、DMA中断
+<p align="center">
+<img src="figure/DCMI-DMA.png" width="100%" >
+</p>
+
+
+
+
+
+
