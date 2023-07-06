@@ -38,6 +38,10 @@ stm32h7xx_hal_conf.h打开#define HAL_DCMI_MODULE_ENABLED，不然无法识别dc
 <img src="figure/DCMI-DMA.png" width="100%" >
 </p>
 
+- demo_run
+  
+结合MPU6050，其中，在本项目中，机器人持续执行，即编码器读取实际的电机速度大小一致，使用PID进行调节，这里使用PI速度环进行控制，当需要进行转向功能时，则停止，控制左右方向进行旋转，也是PID的转向环控制，向右旋转时，右电机停止，左电机向前，且PWM占空比随角度逐渐逼近而变化，采用PID的思想，快速稳定地旋转到指定角度。
+  
 
 
 
