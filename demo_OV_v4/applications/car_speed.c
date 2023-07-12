@@ -2,24 +2,31 @@
 #include <board.h>
 #include <drv_common.h>
 #include <stm32h7xx.h>
-#include "drv_common.h"
+
+#include <rtdevice.h>
+//#include "drv_common.h"
+#include "car_speed.h"
+
+#include <stdlib.h>
 
 
 TIM_HandleTypeDef htim3;
 
-void HAL_TIM_MspPostInit(TIM_HandleTypeDef* timHandle)
-{
+rt_uint32_t T = 500000;  /* 2KHz */
 
+void HAL_TIM_MspPostInit(TIM_HandleTypeDef* htim)
+{
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-  if(timHandle->Instance==TIM3)
+  if(htim->Instance==TIM3)
   {
   /* USER CODE BEGIN TIM3_MspPostInit 0 */
 
   /* USER CODE END TIM3_MspPostInit 0 */
 
-    __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
     /**TIM3 GPIO Configuration
     PB0     ------> TIM3_CH3
+    PB1     ------> TIM3_CH4
     */
     GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_0;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -50,7 +57,7 @@ void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 1 */
   htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 0;
+  htim3.Init.Prescaler = 200;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim3.Init.Period = 65535;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -119,13 +126,80 @@ void HAL_TIM_PWM_MspDeInit(TIM_HandleTypeDef* tim_pwmHandle)
   }
 }
 
+#define PWM_DEV_NAME        "pwm3"  /* PWM设备名称 */
+#define PWM_DEV_CHANNEL_L     3       /* PWM通道 */
+#define PWM_DEV_CHANNEL_R     4       /* PWM通道 */
+struct rt_device_pwm *pwm_dev;      /* PWM设备句柄 */
+
 
 int hw_car_speed_init(void)
 {
     MX_TIM3_Init();
 
+    /* 查找设备 */
+    pwm_dev = (struct rt_device_pwm *)rt_device_find(PWM_DEV_NAME);
+
+    if (pwm_dev == RT_NULL)
+    {
+        rt_kprintf("pwm device %s not found!\n", PWM_DEV_NAME);
+        return -RT_ERROR;
+    }
+
     return RT_EOK;
 }
 
-INIT_BOARD_EXPORT(hw_car_speed_init);
+/*
+ * 1 向前
+ * 0 停止
+ * -1向后
+ */
+void car_dir_control(rt_int8_t L_dwheel , rt_int8_t R_dwheel)
+{
+    switch (L_dwheel)
+    {
+        case (-1) : rt_pin_write(L_engine_direction1, PIN_LOW); rt_pin_write(L_engine_direction2, PIN_HIGH); break;
+        case (0) : rt_pin_write(L_engine_direction1, PIN_LOW); rt_pin_write(L_engine_direction2, PIN_LOW); break;
+        case (1): rt_pin_write(L_engine_direction1, PIN_HIGH); rt_pin_write(L_engine_direction2, PIN_LOW); break;
+        default : break;
+    }
+    switch (R_dwheel)
+    {
+        case (-1) : rt_pin_write(R_engine_direction1, PIN_LOW); rt_pin_write(R_engine_direction2, PIN_HIGH); break;
+        case (0) : rt_pin_write(R_engine_direction1, PIN_LOW); rt_pin_write(R_engine_direction2, PIN_LOW); break;
+        case (1) : rt_pin_write(R_engine_direction1, PIN_HIGH); rt_pin_write(R_engine_direction2, PIN_LOW); break;
+        default : break;
+    }
+}
+/*
+ * pulse_CH3 --> PB0  pulse_CH4 --> PB1
+ * 0 -- 500000范围
+ * 2khz
+ */
+void car_speed_control(rt_uint32_t pulse_CH3,rt_uint32_t pulse_CH4){
+
+    if(pulse_CH3 > 0 && pulse_CH4 > 0){
+        car_dir_control(1, 1);
+    }else if (pulse_CH3 > 0 && pulse_CH4 < 0) {
+        car_dir_control(1, 0);
+    }else if (pulse_CH3 < 0 && pulse_CH4 > 0) {
+        car_dir_control(0, 1);
+    }else if (pulse_CH3 < 0 && pulse_CH4 < 0) {
+        car_dir_control(0, 0);
+    }
+    pulse_CH3 = abs(pulse_CH3);
+    pulse_CH4 = abs(pulse_CH4);
+    /* 设置PWM周期和脉冲宽度 */
+    rt_pwm_set(pwm_dev, PWM_DEV_CHANNEL_L, T, pulse_CH3);
+    /* 使能设备 */
+    rt_pwm_enable(pwm_dev, PWM_DEV_CHANNEL_L);
+
+    /* 设置PWM周期和脉冲宽度 */
+    rt_pwm_set(pwm_dev, PWM_DEV_CHANNEL_R, T, pulse_CH4);
+    /* 使能设备 */
+    rt_pwm_enable(pwm_dev, PWM_DEV_CHANNEL_R);
+}
+
+
+
+
 

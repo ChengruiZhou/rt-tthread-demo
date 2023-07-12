@@ -19,4 +19,4 @@
 void MX_I2C1_Init(void);
 uint8_t OV5640_WriteReg(uint16_t Addr, uint8_t Data);
 uint8_t OV5640_ReadReg(uint16_t Addr);
-
+uint8_t OV5640_WriteFW(uint8_t *pBuffer ,uint16_t BufferSize);

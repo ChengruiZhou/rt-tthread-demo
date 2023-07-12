@@ -17,14 +17,22 @@
 #include <rtdbg.h>
 
 #include "ov5640_scch.h"
-#include "ov5640_dcmi.h"
-////
-extern volatile uint32_t image[img_width * img_height] __attribute__((section(".SDRAM")));
+#include "bsp_ov5640.h"
+#include "ov5640_AF.h"
+
+#include "car_speed.h"
+
+uint8_t fps;
+extern uint32_t image[img_width * img_height] __attribute__((section(".SDRAM")));
+
 int main(void)
 {
+
+    /*
     OV5640_IDTypeDef OV5640_Camera_ID;
-    OV5640_init();
-    OV5640_Reset();
+    MX_I2C1_Init();
+    OV5640_HW_Init();
+
     OV5640_ReadID(&OV5640_Camera_ID);
 
     if(OV5640_Camera_ID.PIDH  == 0x56)
@@ -35,19 +43,26 @@ int main(void)
         LOG_D("can not find ov5640\n");
         while(1);
     }
-
+    // 配置摄像头输出像素格式
     OV5640_RGB565Config();
+    // 初始化摄像头，捕获并显示图像
+    OV5640_Init();
+    OV5640_AUTO_FOCUS();
+    */
 
-    for (uint32_t i = 0; i < 128; i++) {
-        volatile uint32_t *address = (volatile uint32_t *)&image[i];
-        volatile uint32_t data = *address;
-        LOG_D("address: 0x%08X, data: %d\n", (uint32_t)address, data);
-    }
+    hw_car_speed_init();
+    car_speed_control(-100000,200000);
 
     while (1)
     {
-        LOG_D("c ov5640");
-//        HAL_Delay(1000);
+        /*
+         // 输出 Fps
+        LOG_D("fps = %d",fps);
+
+        LOG_D("Adress: 0x%08X, Data: 0x%08X\n", (uint32_t)&image[0] , image[0]);
+        */
+//        LOG_D("TIM");
+
         rt_thread_mdelay(1000);
     }
 

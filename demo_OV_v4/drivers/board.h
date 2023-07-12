@@ -166,6 +166,8 @@ extern "C"
 /*#define BSP_USING_PWM3*/
 #define BSP_USING_PWM3
 #define BSP_USING_PWM3_CH3
+#define BSP_USING_PWM3_CH4
+
 
 /*-------------------------- PWM CONFIG END --------------------------*/
 
